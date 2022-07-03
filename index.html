@@ -143,7 +143,6 @@
         const connect = async () => {
           const accounts = await provider.send('ton_requestAccounts');
           const account = accounts[0];
-          showAccountAddress(account);
           console.log(await provider.send('ton_requestWallets'));
         };
 
@@ -154,10 +153,6 @@
             console.error(e);
           };
         });
-      };
-      
-      function showAccountAddress(address) {
-        document.getElementById('address').innerText = address;
       };
       
       // Initialize TON
