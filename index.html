@@ -125,70 +125,9 @@
         </ul>
       </div>
     </div>
-    <!-- <script src="./libs/tonweb.js">
-      const tonweb = TonWeb();
-
-      try {
-        if (window.tonProtocolVersion || window.tonProtocolVersion > 1) {
-          if (window.ton.isTonWallet) {
-            console.log('TON Wallet Extension found!')
-          }
-
-          const provider = window.ton
-          console.log(provider);
-          
-          const accounts = await provider.send('ton_requestWallets')
-
-          const walletAddress = new TonWeb.utils.Address(accounts[0].address)
-
-          console.log('Connected accounts:', accounts)
-
-          console.log('Connected wallet address:', walletAddress.toString(true, true, true))
-
-          setWalletAddress(walletAddress)
-          setWalletHistory(await tonweb.getTransactions(walletAddress))
-
-        } else {
-          alert('Please update your TON Wallet Extension 💎')
-          location.href = 'https://chrome.google.com/webstore/detail/ton-wallet/nphplpgoakhhjchkkhmiggakijnkhfnd'
-        }
-
-      } catch (e) {
-        console.error(e)
-      }
-    </script> -->
     <script type="text/javascript" src="./libs/tonweb.js"></script>
     <script>
       const tonweb = new window.TonWeb(new window.TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: '8c9f4155363c542e4fe538f9e5eb101577b2b41e6ba3cd252fdbf5d1f9187fef'}));
-
-      // try {
-      //   if (window.tonProtocolVersion || window.tonProtocolVersion > 1) {
-      //     if (window.ton.isTonWallet) {
-      //       console.log('TON Wallet Extension found!')
-      //     }
-
-      //     const provider = window.ton
-      //     console.log(provider);
-          
-      //     const accounts = provider.send('ton_requestWallets')
-
-      //     const walletAddress = new TonWeb.utils.Address(accounts[0].address)
-
-      //     console.log('Connected accounts:', accounts)
-
-      //     console.log('Connected wallet address:', walletAddress.toString(true, true, true))
-
-      //     setWalletAddress(walletAddress)
-      //     setWalletHistory(tonweb.getTransactions(walletAddress))
-
-      //   } else {
-      //     alert('Please update your TON Wallet Extension 💎')
-      //     location.href = 'https://chrome.google.com/webstore/detail/ton-wallet/nphplpgoakhhjchkkhmiggakijnkhfnd'
-      //   }
-
-      // } catch (e) {
-      //   console.error(e)
-      // };
 
       const onTonReady = () => {
         console.log('tonready');
@@ -199,7 +138,7 @@
         };
         
         const provider = window.ton;
-        console.log('isTonWallet=', provider.isTonWallet);
+        console.log('isTonWallet =', provider.isTonWallet);
         
         const connect = async () => {
           const accounts = await provider.send('ton_requestAccounts');
@@ -207,11 +146,22 @@
           showAccountAddress(account);
           console.log(await provider.send('ton_requestWallets'));
         };
-      };
 
-      document.getElementById('auth').addEventListener('click', async () => {
-        console.log(await onTonReady());
-      });
+        document.getElementById('auth').addEventListener('click', async () => {
+          try {
+            await connect();
+          } catch (e) {
+            console.error(e);
+          };
+        });
+      };
+      
+      // Initialize TON
+      if (window.ton) {
+        onTonReady();
+      } else {
+        window.addEventListener('tonready', () => onTonReady(), false);
+      };
     </script>
     <script src="./script.js"></script>
   </body>
