@@ -194,10 +194,10 @@
         };
         
         const seedA = TonWeb.utils.hexToBytes('');
-        const keyPairA = tonweb.utils.keyPairFromSeed(seedA);
+        const keyPairA = tonweb.utils.keyPairFromSeed(tonweb.utils.newSeed());
 
         const seedB = TonWeb.utils.hexToBytes('');
-        const keyPairB = tonweb.utils.keyPairFromSeed(seedB);
+        const keyPairB = tonweb.utils.keyPairFromSeed(tonweb.utils.newSeed());
         
         const walletA = tonweb.wallet.create({
           publicKey: keyPairA.publicKey
