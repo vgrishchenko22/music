@@ -270,18 +270,18 @@
           console.log('balanceA = ', data.balanceA.toString());
           console.log('balanceB = ', data.balanceB.toString());
 
-          new Promise((resolve, reject) => {
+          new Promise(async (resolve, reject) => {
             await fromWalletA.topUp({coinsA: channelInitState.balanceA, coinsB: new BN(0)}).send(channelInitState.balanceA.add(toNano('0.05')));
             await fromWalletB.topUp({coinsA: new BN(0), coinsB: channelInitState.balanceB}).send(channelInitState.balanceB.add(toNano('0.05')));
-            setTimeout(() => {
+            setTimeout(async () => {
               console.log('5 sec');
             }, 5000);
-          }).then(() => {
+          }).then(async () => {
             await fromWalletB.init(channelInitState).send(toNano('0.05'));
           });
         });
         
-        await setInterval(() => {
+        await setInterval(async () => {
           const channelState = {
             balanceA: toNano(x),
             balanceB: toNano(y),
