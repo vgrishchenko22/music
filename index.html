@@ -156,6 +156,10 @@
         });
       };
       
+      function showAccountAddress(address) {
+        document.getElementById('address').innerText = address;
+      };
+      
       // Initialize TON
       if (window.ton) {
         onTonReady();
