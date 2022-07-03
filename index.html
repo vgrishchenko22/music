@@ -6,7 +6,13 @@
     <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <button id="auth" class="cw">Connect Wallet</button>
+    <div class="au">
+      <button id="auth">Connect Wallet</button>
+      <div class="wa">
+        <span>My address: </span>
+        <span id="addr"></span>
+      </div>
+    </div>
     <div class="body">
       <div class="player">
         <div class="player__header">
@@ -143,6 +149,7 @@
         const connect = async () => {
           const accounts = await provider.send('ton_requestAccounts');
           const account = accounts[0];
+          showAccountAddress(account);
           console.log(await provider.send('ton_requestWallets'));
         };
 
@@ -153,9 +160,18 @@
             console.error(e);
           };
         });
+        
+        provider.on('accountsChanged', function (accounts) {
+          console.log('accountsChanged', accounts);
+          const account = accounts[0];
+          showAccountAddress(account);
+        });
+        
+        function showAccountAddress(address) {
+          document.getElementById('addr').innerText = address;
+        };
       };
-      
-      // Initialize TON
+
       if (window.ton) {
         onTonReady();
       } else {
