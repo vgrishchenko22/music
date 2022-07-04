@@ -309,7 +309,7 @@
             
             await fromWalletB.close({
               ...channelState,
-              hisSignature: signatureCloseA
+              hisSignature: signatureCloseB
             }).send(toNano('0.05'));
           } catch (e) {
             console.error(e);
