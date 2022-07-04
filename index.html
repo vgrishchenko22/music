@@ -193,11 +193,11 @@
           document.getElementById('addr').innerText = address;
         };
         
-        const seedA = TonWeb.utils.hexToBytes('');
-        const keyPairA = tonweb.utils.keyPairFromSeed(tonweb.utils.newSeed());
+        const seedA = await window.TonWeb.utils.hexToBytes('0ad96df89d017c55a11c191d33902917c3146136511824aee7b853dbc6b851bf');
+        const keyPairA = tonweb.utils.keyPairFromSeed(seedA);
 
-        const seedB = TonWeb.utils.hexToBytes('');
-        const keyPairB = tonweb.utils.keyPairFromSeed(tonweb.utils.newSeed());
+        const seedB = await window.TonWeb.utils.hexToBytes('33e6b46968bf3704a08ddd377d43862e08a6c1114c570da2f024184faa2e6b17');
+        const keyPairB = tonweb.utils.keyPairFromSeed(seedB);
         
         const walletA = tonweb.wallet.create({
           publicKey: keyPairA.publicKey
