@@ -151,7 +151,7 @@
     </div>
     <script type="text/javascript" src="./libs/tonweb.js"></script>
     <script>
-      let a = 0, b = 0, c = 0;
+      let a = 0, b = 0;
       const tonweb = new window.TonWeb(new window.TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: '8c9f4155363c542e4fe538f9e5eb101577b2b41e6ba3cd252fdbf5d1f9187fef'}));
       const BN = window.TonWeb.utils.BN;
       const toNano = window.TonWeb.utils.toNano;
@@ -220,7 +220,7 @@
         };
         
         const channelConfig = {
-          channelId: new BN(124),
+          channelId: new BN(125),
           addressA: walletAddressA,
           addressB: walletAddressB,
           initBalanceA: channelInitState.balanceA,
@@ -259,8 +259,6 @@
         });
 
         document.getElementById('opn-btn').addEventListener('click', async () => {
-          console.log(123);
-
           await fromWalletB.deploy().send(toNano('0.05'));
         
           console.log(await channelB.getChannelState());
@@ -268,16 +266,18 @@
             const data = await channelB.getData();
             document.getElementById('ba').innerText = data.balanceA.toString();
             document.getElementById('bb').innerText = data.balanceB.toString();
-          }, 2000);
+          }, 1000);
           const data = await channelB.getData();
           console.log('balanceA = ', data.balanceA.toString());
           console.log('balanceB = ', data.balanceB.toString());
 
           new Promise(async (resolve, reject) => {
-            await fromWalletA.topUp({coinsA: channelInitState.balanceA, coinsB: new BN(0)}).send(channelInitState.balanceA.add(toNano('0.05')));
-            await fromWalletB.topUp({coinsA: new BN(0), coinsB: channelInitState.balanceB}).send(channelInitState.balanceB.add(toNano('0.05')));
+            await fromWalletA.topUp({coinsA: channelInitState.balanceA, coinsB: new BN(a)}).send(channelInitState.balanceA.add(toNano('0.05')));
+            await fromWalletB.topUp({coinsA: new BN(b), coinsB: channelInitState.balanceB}).send(channelInitState.balanceB.add(toNano('0.05')));
             setTimeout(async () => {
               console.log('5 sec');
+              a++;
+              b++;
             }, 5000);
           }).then(async () => {
             await fromWalletB.init(channelInitState).send(toNano('0.05'));
@@ -287,8 +287,8 @@
         const channelState = {
           balanceA: toNano('0.99'),
           balanceB: toNano('1.01'),
-          seqnoA: new BN(1),
-          seqnoB: new BN(0)
+          seqnoA: new BN(a++),
+          seqnoB: new BN(b)
         };
         
         const signatureA = await channelA.signState(channelState);
@@ -299,7 +299,6 @@
         const signatureB = await channelB.signState(channelState);
 
         document.getElementById('cls-btn').addEventListener('click', async () => {
-          console.log(123);
           try {
             const signatureCloseB = await channelB.signClose(channelState);
             
@@ -319,11 +318,10 @@
 
       if (window.ton) {
         onTonReady();
+        init();
       } else {
         window.addEventListener('tonready', () => onTonReady(), false);
       };
-
-      init();
     </script>
     <script src="./script.js"></script>
   </body>
