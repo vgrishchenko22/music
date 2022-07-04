@@ -193,127 +193,130 @@
         };
       };
 
-      const seedA = await window.TonWeb.utils.hexToBytes('0ad96df89d017c55a11c191d33902917c3146136511824aee7b853dbc6b851bf');
-      const keyPairA = tonweb.utils.keyPairFromSeed(seedA);
+      const init = async () => {
+        const seedA = await window.TonWeb.utils.hexToBytes('0ad96df89d017c55a11c191d33902917c3146136511824aee7b853dbc6b851bf');
+        const keyPairA = tonweb.utils.keyPairFromSeed(seedA);
 
-      const seedB = await window.TonWeb.utils.hexToBytes('33e6b46968bf3704a08ddd377d43862e08a6c1114c570da2f024184faa2e6b17');
-      const keyPairB = tonweb.utils.keyPairFromSeed(seedB);
-      
-      const walletA = tonweb.wallet.create({
-        publicKey: keyPairA.publicKey
-      });
-      const walletAddressA = await walletA.getAddress();
-      console.log('walletAddressA =', walletAddressA.toString(true, true, true));
-      
-      const walletB = tonweb.wallet.create({
-        publicKey: keyPairB.publicKey
-      });
-      const walletAddressB = await walletB.getAddress();
-      console.log('walletAddressB =', walletAddressB.toString(true, true, true));
-      
-      const channelInitState = {
-        balanceA: toNano('1'),
-        balanceB: toNano('1'),
-        seqnoA: new BN(0),
-        seqnoB: new BN(0)
-      };
-      
-      const channelConfig = {
-        channelId: new BN(124),
-        addressA: walletAddressA,
-        addressB: walletAddressB,
-        initBalanceA: channelInitState.balanceA,
-        initBalanceB: channelInitState.balanceB
-      };
-      
-      const channelA = tonweb.payments.createChannel({
-        ...channelConfig,
-        isA: true,
-        myKeyPair: keyPairA,
-        hisPublicKey: keyPairB.publicKey
-      });
-      const channelAddress = await channelA.getAddress();
-      document.getElementById('chAddr').innerText = channelAddress.toString(true, true, true);
-      console.log('channelAddress =', channelAddress.toString(true, true, true));
-      
-      const channelB = tonweb.payments.createChannel({
-        ...channelConfig,
-        isA: false,
-        myKeyPair: keyPairB,
-        hisPublicKey: keyPairA.publicKey
-      });
-      
-      if ((await channelB.getAddress()).toString() !== channelAddress.toString()) {
-        throw new Error('Channels address not same');
-      };
-      
-      const fromWalletA = channelA.fromWallet({
-        wallet: walletA,
-        secretKey: keyPairA.secretKey
-      });
-      
-      const fromWalletB = channelB.fromWallet({
-        wallet: walletB,
-        secretKey: keyPairB.secretKey
-      });
-
-      document.getElementById('opn-btn').addEventListener('click', async () => {
-        await fromWalletB.deploy().send(toNano('0.05'));
-      
-        console.log(await channelB.getChannelState());
-        setInterval(async () => {
-          const data = await channelB.getData();
-          document.getElementById('ba').innerText = data.balanceA.toString();
-          document.getElementById('bb').innerText = data.balanceB.toString();
-        }, 2000);
-        const data = await channelB.getData();
-        console.log('balanceA = ', data.balanceA.toString());
-        console.log('balanceB = ', data.balanceB.toString());
-
-        new Promise(async (resolve, reject) => {
-          await fromWalletA.topUp({coinsA: channelInitState.balanceA, coinsB: new BN(0)}).send(channelInitState.balanceA.add(toNano('0.05')));
-          await fromWalletB.topUp({coinsA: new BN(0), coinsB: channelInitState.balanceB}).send(channelInitState.balanceB.add(toNano('0.05')));
-          setTimeout(async () => {
-            console.log('5 sec');
-          }, 5000);
-        }).then(async () => {
-          await fromWalletB.init(channelInitState).send(toNano('0.05'));
+        const seedB = await window.TonWeb.utils.hexToBytes('33e6b46968bf3704a08ddd377d43862e08a6c1114c570da2f024184faa2e6b17');
+        const keyPairB = tonweb.utils.keyPairFromSeed(seedB);
+        
+        const walletA = tonweb.wallet.create({
+          publicKey: keyPairA.publicKey
         });
-      });
-    
-      const channelState = {
-        balanceA: toNano('0.99'),
-        balanceB: toNano('1.01'),
-        seqnoA: new BN(1),
-        seqnoB: new BN(0)
-      };
-      
-      const signatureA = await channelA.signState(channelState);
-      
-      if (!(await channelB.verifyState(channelState, signatureA))) {
-        throw new Error('Invalid A signature');
-      };
-      const signatureB = await channelB.signState(channelState);
-
-      document.getElementById('cls-btn').addEventListener('click', async () => {
-        try {
-          const signatureCloseA = await channelB.signClose(channelState);
-          
-          if (!(await channelB.verifyClose(channelState, signatureCloseA))) {
-            throw new Error('Invalid B signature');
-          };
-          
-          await fromWalletA.close({
-            ...channelState,
-            hisSignature: signatureCloseA
-          }).send(toNano('0.05'));
-        } catch (e) {
-          console.error(e);
+        const walletAddressA = await walletA.getAddress();
+        console.log('walletAddressA =', walletAddressA.toString(true, true, true));
+        
+        const walletB = tonweb.wallet.create({
+          publicKey: keyPairB.publicKey
+        });
+        const walletAddressB = await walletB.getAddress();
+        console.log('walletAddressB =', walletAddressB.toString(true, true, true));
+        
+        const channelInitState = {
+          balanceA: toNano('1'),
+          balanceB: toNano('1'),
+          seqnoA: new BN(0),
+          seqnoB: new BN(0)
         };
-      });
+        
+        const channelConfig = {
+          channelId: new BN(124),
+          addressA: walletAddressA,
+          addressB: walletAddressB,
+          initBalanceA: channelInitState.balanceA,
+          initBalanceB: channelInitState.balanceB
+        };
+        
+        const channelA = tonweb.payments.createChannel({
+          ...channelConfig,
+          isA: true,
+          myKeyPair: keyPairA,
+          hisPublicKey: keyPairB.publicKey
+        });
+        const channelAddress = await channelA.getAddress();
+        document.getElementById('chAddr').innerText = channelAddress.toString(true, true, true);
+        console.log('channelAddress =', channelAddress.toString(true, true, true));
+        
+        const channelB = tonweb.payments.createChannel({
+          ...channelConfig,
+          isA: false,
+          myKeyPair: keyPairB,
+          hisPublicKey: keyPairA.publicKey
+        });
+        
+        if ((await channelB.getAddress()).toString() !== channelAddress.toString()) {
+          throw new Error('Channels address not same');
+        };
+        
+        const fromWalletA = channelA.fromWallet({
+          wallet: walletA,
+          secretKey: keyPairA.secretKey
+        });
+        
+        const fromWalletB = channelB.fromWallet({
+          wallet: walletB,
+          secretKey: keyPairB.secretKey
+        });
+
+        document.getElementById('opn-btn').addEventListener('click', async () => {
+          await fromWalletB.deploy().send(toNano('0.05'));
+        
+          console.log(await channelB.getChannelState());
+          setInterval(async () => {
+            const data = await channelB.getData();
+            document.getElementById('ba').innerText = data.balanceA.toString();
+            document.getElementById('bb').innerText = data.balanceB.toString();
+          }, 2000);
+          const data = await channelB.getData();
+          console.log('balanceA = ', data.balanceA.toString());
+          console.log('balanceB = ', data.balanceB.toString());
+
+          new Promise(async (resolve, reject) => {
+            await fromWalletA.topUp({coinsA: channelInitState.balanceA, coinsB: new BN(0)}).send(channelInitState.balanceA.add(toNano('0.05')));
+            await fromWalletB.topUp({coinsA: new BN(0), coinsB: channelInitState.balanceB}).send(channelInitState.balanceB.add(toNano('0.05')));
+            setTimeout(async () => {
+              console.log('5 sec');
+            }, 5000);
+          }).then(async () => {
+            await fromWalletB.init(channelInitState).send(toNano('0.05'));
+          });
+        });
+      
+        const channelState = {
+          balanceA: toNano('0.99'),
+          balanceB: toNano('1.01'),
+          seqnoA: new BN(1),
+          seqnoB: new BN(0)
+        };
+        
+        const signatureA = await channelA.signState(channelState);
+        
+        if (!(await channelB.verifyState(channelState, signatureA))) {
+          throw new Error('Invalid A signature');
+        };
+        const signatureB = await channelB.signState(channelState);
+
+        document.getElementById('cls-btn').addEventListener('click', async () => {
+          try {
+            const signatureCloseA = await channelB.signClose(channelState);
+            
+            if (!(await channelB.verifyClose(channelState, signatureCloseA))) {
+              throw new Error('Invalid B signature');
+            };
+            
+            await fromWalletA.close({
+              ...channelState,
+              hisSignature: signatureCloseA
+            }).send(toNano('0.05'));
+          } catch (e) {
+            console.error(e);
+          };
+        });
+      };
 
       if (window.ton) {
         onTonReady();
+        init();
       } else {
         window.addEventListener('tonready', () => onTonReady(), false);
       };
