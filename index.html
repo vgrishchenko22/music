@@ -300,15 +300,15 @@
 
         document.getElementById('cls-btn').addEventListener('click', async () => {
           try {
-            const signatureCloseB = await channelB.signClose(channelState);
+            const signatureCloseA = await channelB.signClose(channelState);
             
-            if (!(await channelA.verifyClose(channelState, signatureCloseB))) {
+            if (!(await channelB.verifyClose(channelState, signatureCloseA))) {
               throw new Error('Invalid B signature');
             };
             
             await fromWalletB.close({
               ...channelState,
-              hisSignature: signatureCloseB
+              hisSignature: signatureCloseA
             }).send(toNano('0.05'));
           } catch (e) {
             console.error(e);
