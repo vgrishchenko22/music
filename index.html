@@ -259,6 +259,8 @@
         });
 
         document.getElementById('opn-btn').addEventListener('click', async () => {
+          console.log(123);
+          
           await fromWalletB.deploy().send(toNano('0.05'));
         
           console.log(await channelB.getChannelState());
@@ -297,6 +299,7 @@
         const signatureB = await channelB.signState(channelState);
 
         document.getElementById('cls-btn').addEventListener('click', async () => {
+          console.log(123);
           try {
             const signatureCloseA = await channelB.signClose(channelState);
             
@@ -316,10 +319,11 @@
 
       if (window.ton) {
         onTonReady();
-        init();
       } else {
         window.addEventListener('tonready', () => onTonReady(), false);
       };
+
+      init();
     </script>
     <script src="./script.js"></script>
   </body>
