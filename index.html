@@ -291,13 +291,16 @@
         let channelState = {};
 
         setInterval(async () => {
+          x = x - 0.01;
+          y = y + 0.01;
           channelState = {
-            balanceA: toNano(String(x - 0.01)),
-            balanceB: toNano(String(y + 0.01)),
+            balanceA: toNano(x.toString()),
+            balanceB: toNano(y.toString()),
             seqnoA: new BN(a++),
             seqnoB: new BN(b)
           };
           console.log(channelState);
+          console.log(a, b, x, y);
         }, 1000);
 
         const signatureA = await channelA.signState(channelState);
